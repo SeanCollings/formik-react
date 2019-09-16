@@ -1,0 +1,12 @@
+build form for creating a music playlist
+
+text - playlist name
+checkbox - genre tags
+[] - list of songs / hard coded
+order - add/remove/up and down
+
+
+
+validate - has text, has name, has 2 songs min, min 1 genre tag
+
+submit - console log / alert

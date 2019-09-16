@@ -1,0 +1,69 @@
+version: '3.3'
+
+#docker run --rm  -v /home/dev/projects/demo:/app -w /app -p 7999:3000 -e API_URL=allangray.local.net 7b0892ed3009 node server.js
+#docker run --rm -it -v /home/dev/projects/formik:/app -w /app -p 8080:8080 7b0892ed3009 /bin/bash
+#docker run --rm -e API_URL=happy_days -p 4000:3000 docker-registry.gray.net/common/seanco/app-fancy:preview
+
+services:
+  app:
+    image: docker-registry.gray.net/common/node-devtools:10.10.4
+    user: node
+    volumes: 
+      - ./:/service
+    working_dir: /service
+    ports:
+      - '8080:8080'
+    command: ['npm', 'run', 'start:dev']
+    
+  server:
+    image: docker-registry.gray.net/common/node-devtools:10.10.4
+    user: node
+    volumes: 
+      - ./server:/service
+    working_dir: /service
+    ports:
+      - '7998:3000'
+    command: ['npm', 'run', 'start:dev']
+    environment:
+      - API_URL=allangray.local.net
+
+  # complete:
+  #   image: docker-registry.gray.net/common/node-devtools:10.10.4
+  #   user: node
+  #   volumes: 
+  #     - ./:/service
+  #   working_dir: /service
+  #   ports:
+  #         - '7999:3000'
+  #         - '8000:8080'
+  #   environment:
+  #     - NODE_ENV=development
+  #   command: ['npm', 'run', 'dev']
+
+  # production:
+  #   image: docker-registry.gray.net/common/node-devtools:10.10.4
+  #   user: nobody
+  #   volumes: 
+  #     - ./:/service
+  #   working_dir: /service
+  #   ports:
+  #         - '7999:3000'
+  #         - '8000:8080'
+  #   environment:
+  #     - NODE_ENV=production
+  #   command: ['npm', 'run', 'dev']
+
+  # update:
+  #   image: docker-registry.gray.net/common/node-devtools:10.10.4
+  #   user: node
+  #   volumes: 
+  #     - ./:/service
+  #   working_dir: /service
+  #   #ports:
+  #   #      - '7999:3000'
+  #   command: ['npm', 'i']
+  
+networks:
+  default:
+    external:
+      name: local.gray.net
