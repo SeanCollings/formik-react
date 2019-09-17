@@ -1,15 +1,16 @@
 export const SONG_LIST = [
-  ['Journey', `Don't stop believing`],
-  ['Martin Garrix', `Animal`],
-  ['AC/DC', 'Back in Black'],
-  ['Bon Jovi', 'Living on a Prayer'],
-  ['Muse', 'Starlight'],
-  ['Creedence Clearwater Revival', 'Bad Moon Rising'],
-  ['The Eagles', 'Hotel California'],
-  ['Michael Jackson', 'Billie Jean'],
-  ['Wild Chery', 'Play the Funky Music White Boy'],
-  ['The BeeGees', `Stayin' Alive`],
-  ['A-Ha', 'Take On Me'],
+  { band: 'Journey', title: `Don't stop believing`, id: 1 },
+  { band: 'Martin Garrix', title: `Animal`, id: 2 },
+  { band: 'AC/DC', title: 'Back in Black', id: 3 },
+  { band: 'Bon Jovi', title: 'Living on a Prayer', id: 4 },
+  { band: 'Muse', title: 'Starlight', id: 5 },
+  { band: 'Creedence Clearwater Revival', title: 'Bad Moon Rising', id: 6 },
+  { band: 'The Eagles', title: 'Hotel California', id: 7 },
+  { band: 'Michael Jackson', title: 'Billie Jean', id: 8 },
+  { band: 'Wild Chery', title: 'Play the Funky Music White Boy', id: 9 },
+  { band: 'The BeeGees', title: `Stayin' Alive`, id: 10 },
+  { band: 'A-Ha', title: 'Take On Me', id: 11 },
+  { band: 'Linkin Park', title: 'Crawling', id: 12 }
 ];
 
 export const GENRES = [
@@ -23,5 +24,6 @@ export const GENRES = [
   'Heavy-Metal',
   'Country',
   'Jazz',
-  'Indie'
+  'Indie',
+  'Rap-Metal'
 ];
