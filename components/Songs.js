@@ -5,7 +5,6 @@ import { useThemeContext } from './contexts';
 import { SONG_LIST as songList, SORT } from '../utils/constants';
 import { orderArrayOfObjects } from '../utils/helper';
 
-
 // const TOGGLE_ACTION = 'toogle'
 // const toggleAction = id => ({
 //   type: TOGGLE_ACTION,
@@ -23,7 +22,6 @@ import { orderArrayOfObjects } from '../utils/helper';
 //   }
 // }
 
-
 const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
   const [themeColour] = useThemeContext();
   // const { setFieldValue } = useFormikContext();
@@ -33,6 +31,9 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
   const [movedSongs, setMovedSongs] = useState([]);
   const [toggledUnSelectedSongs, setToggledUnSelectedSongs] = useState([]);
   const [toggledMoveSongs, setToggledMovedSongs] = useState([]);
+  const [searchedSongs, setSearchedSongs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expandSearch, setExpandSearch] = useState(false);
   const [sortSongs, setSortSongs] = useState(SORT.DOWN);
 
   const preventUpdate = useRef(true);
@@ -42,14 +43,21 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
     if (preventUpdate.current) {
       preventUpdate.current = false;
     } else {
-      if (!dirty && !savedValues || newUpload) {
-        setUnselected([...songList]);
-        setMovedSongs([]);
-        preventUpdate.current = true;
-        savedValuesUsed.current = false;
+      if ((!dirty && !savedValues) || newUpload) {
+        if (searchTerm.length === 0) {
+          setUnselected([...songList]);
+          setMovedSongs([]);
+          preventUpdate.current = true;
+          savedValuesUsed.current = false;
+        }
       }
 
-      if (savedValues && savedValues.songs && savedValues.songs.length > 0 && !savedValuesUsed.current) {
+      if (
+        savedValues &&
+        savedValues.songs &&
+        savedValues.songs.length > 0 &&
+        !savedValuesUsed.current
+      ) {
         const savedSongIds = savedValues.songs.map(song => song.id);
         const filtered = songList.filter(f => !savedSongIds.includes(f.id));
         setMovedSongs([...savedValues.songs]);
@@ -67,6 +75,9 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
         f => !toggledUnSelectedSongs.includes(f)
       );
       setUnselected(filtered);
+      setSearchTerm('');
+      setSearchedSongs([]);
+      setExpandSearch(false);
       form.setFieldValue('songs', [...movedSongs, ...toggledUnSelectedSongs]);
     }
   };
@@ -178,7 +189,10 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
   };
 
   const renderUnselectedSongs = dirty => {
-    return orderArrayOfObjects(unSelected, sortSongs).map((song, i) => {
+    return orderArrayOfObjects(
+      searchTerm.length > 0 ? searchedSongs : unSelected,
+      sortSongs
+    ).map((song, i) => {
       return (
         <div key={song.id} className="ui checkbox item">
           <input
@@ -192,13 +206,34 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
     });
   };
 
+  const searchSongs = term => {
+    setSearchTerm(term);
+    const filtered = unSelected.filter(song => {
+      if (
+        song.band.toLowerCase().includes(term) ||
+        song.title.toLowerCase().includes(term)
+      ) {
+        return song;
+      }
+      return null;
+    });
+
+    setSearchedSongs(filtered);
+  };
+
+  const handleSearchInput = eventType => {
+    if (eventType === 'mousedown') {
+      setExpandSearch(true);
+    } else if (eventType === 'blur' && searchTerm.length === 0) {
+      setExpandSearch(false);
+    }
+  };
 
   return (
     <Field>
       {({ field, form }) => {
         return (
           <Fragment>
-
             <h4 className={`ui header ${themeColour}`}>Select Songs</h4>
             <div className="ui grid" style={{ margin: 'auto' }}>
               <div
@@ -206,18 +241,56 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
                 style={{ marginBottom: '0px' }}
               >
                 <Fragment>
-                  <button
-                    className="ui icon button right floated"
-                    style={{ transform: `rotate(${sortSongs === SORT.DOWN ? '0' : '180'}deg)` }}
-                    onClick={() => setSortSongs(sortSongs === SORT.DOWN ? SORT.UP : SORT.DOWN)}
+                  <div
+                    className="ui grid centered"
+                    style={{ marginLeft: '0px' }}
                   >
-                    <i className="sort down icon"></i>
-                  </button>
-                  <h5
-                    className="ui header aligned center"
-                    style={{ marginTop: '0px' }}>
-                    Available songs
-                  </h5>
+                    <h5 className="ui header six wide column">
+                      Available songs
+                    </h5>
+                    <div
+                      className="five wide column"
+                      style={{ marginTop: '-3px' }}
+                    >
+                      <div
+                        className="ui left mini icon input transparent"
+                        style={{
+                          maxWidth: expandSearch ? '100%' : '22px',
+                          transition: 'all 1s ease 0s'
+                        }}
+                      >
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          value={searchTerm}
+                          onMouseDown={e => handleSearchInput(e.type)}
+                          onBlur={e => handleSearchInput(e.type)}
+                          onChange={e =>
+                            searchSongs(e.target.value.toLowerCase())
+                          }
+                        />
+                        <i className={`search icon ${themeColour}`}></i>
+                      </div>
+                    </div>
+                    <button
+                      className="ui icon button "
+                      style={{
+                        transform: `rotateX(${
+                          sortSongs === SORT.DOWN ? '0' : '180'
+                        }deg)`,
+                        transition: 'all 0.2s ease 0s',
+                        backgroundColor: 'white',
+                        marginTop: '-14px'
+                      }}
+                      onClick={() =>
+                        setSortSongs(
+                          sortSongs === SORT.DOWN ? SORT.UP : SORT.DOWN
+                        )
+                      }
+                    >
+                      <i className="sort arrow down icon"></i>
+                    </button>
+                  </div>
                 </Fragment>
                 <div
                   className="ui list"
@@ -286,18 +359,18 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
                 stlye={{ margin: 'auto', paddingTop: '0px' }}
               >
                 <button
-                  className="ui icon button"
+                  className={`ui icon button ${themeColour}`}
                   disabled={toggledMoveSongs.length < 1}
                   onClick={() => moveUp(form)}
                 >
-                  <i className="chevron up icon"></i>
+                  <i className="arrow up icon"></i>
                 </button>
                 <button
-                  className="ui icon button"
+                  className={`ui icon button ${themeColour}`}
                   disabled={toggledMoveSongs.length < 1}
                   onClick={() => moveDown(form)}
                 >
-                  <i className="chevron down icon"></i>
+                  <i className="arrow down icon"></i>
                 </button>
               </div>
             </div>

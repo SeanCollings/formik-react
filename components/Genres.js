@@ -1,10 +1,7 @@
 import React, { Fragment } from 'react';
-import { Formik } from 'formik';
 import { useThemeContext } from './contexts';
 
-
 import Checkbox from './Checkbox';
-import Context from './contexts'
 
 import { GENRES as genres } from '../utils/constants';
 import { orderArray } from '../utils/helper';

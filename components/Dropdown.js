@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState } from 'react';
 
 import { useThemeContext } from './contexts';
 
-import { COLOURS } from '../utils/constants'
+import { COLOURS } from '../utils/constants';
 
 const Dropdown = () => {
   const [themeColour, setThemeColour] = useThemeContext();
@@ -11,16 +11,18 @@ const Dropdown = () => {
   return (
     <div className="ui compact menu floated right tiny">
       <div className="ui simple dropdown item">
-        Colour
-      <i className="dropdown icon"></i>
+        Theme
+        <i className={`dropdown icon ${themeColour}`}></i>
         <div className="menu">
-          {COLOURS.map(col =>
-            <div className="item" key={col} onClick={() => setThemeColour(col)}>{col}</div>
-          )}
+          {COLOURS.map(col => (
+            <div className="item" key={col} onClick={() => setThemeColour(col)}>
+              {col}
+            </div>
+          ))}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Dropdown;
