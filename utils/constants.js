@@ -27,3 +27,21 @@ export const GENRES = [
   'Indie',
   'Rap-Metal'
 ];
+
+export const SORT = {
+  UP: 'up',
+  DOWN: 'down'
+}
+
+export const COLOURS = [
+  'green',
+  'red',
+  'blue',
+  'yellow',
+  'orange',
+  'teal',
+  'olive',
+  'pink',
+  'black',
+  'grey',
+]

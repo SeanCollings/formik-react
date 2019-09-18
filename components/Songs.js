@@ -1,28 +1,60 @@
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { Formik, Field } from 'formik';
+import { useThemeContext } from './contexts';
 
-import { SONG_LIST as songList } from '../utils/constants';
+import { SONG_LIST as songList, SORT } from '../utils/constants';
 import { orderArrayOfObjects } from '../utils/helper';
 
-const App = ({ values, errors, touched, dirty, savedValues }) => {
+
+// const TOGGLE_ACTION = 'toogle'
+// const toggleAction = id => ({
+//   type: TOGGLE_ACTION,
+//   value: id
+// })
+
+// const initialState = { moved: [], toggle: [] };
+
+// function reducer(state, action) {
+//   switch (action.type) {
+//     case TOGGLE_ACTION:
+//       return { ...state, moved: state.moved.includes(action.value) ? state.moved.filter(x => x !== action.value) : [...state.moved, action.value] };
+//     default:
+//       state;
+//   }
+// }
+
+
+const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
+  const [themeColour] = useThemeContext();
+  // const { setFieldValue } = useFormikContext();
+  // const [{ moved, toggle }, dispatch] = useReducer(reducer, initialState);
+
   const [unSelected, setUnselected] = useState([...songList]);
   const [movedSongs, setMovedSongs] = useState([]);
   const [toggledUnSelectedSongs, setToggledUnSelectedSongs] = useState([]);
   const [toggledMoveSongs, setToggledMovedSongs] = useState([]);
+  const [sortSongs, setSortSongs] = useState(SORT.DOWN);
 
   const preventUpdate = useRef(true);
-  // console.log('SAVEDVALUES', savedValues);
+  const savedValuesUsed = useRef(false);
+
   useEffect(() => {
     if (preventUpdate.current) {
       preventUpdate.current = false;
     } else {
-      if (!dirty) {
+      if (!dirty && !savedValues || newUpload) {
         setUnselected([...songList]);
         setMovedSongs([]);
         preventUpdate.current = true;
-        // console.log('NOT DIRTY');
-      } else {
-        // console.log('dirty');
+        savedValuesUsed.current = false;
+      }
+
+      if (savedValues && savedValues.songs && savedValues.songs.length > 0 && !savedValuesUsed.current) {
+        const savedSongIds = savedValues.songs.map(song => song.id);
+        const filtered = songList.filter(f => !savedSongIds.includes(f.id));
+        setMovedSongs([...savedValues.songs]);
+        setUnselected(filtered);
+        savedValuesUsed.current = true;
       }
     }
   });
@@ -146,7 +178,7 @@ const App = ({ values, errors, touched, dirty, savedValues }) => {
   };
 
   const renderUnselectedSongs = dirty => {
-    return orderArrayOfObjects(unSelected).map((song, i) => {
+    return orderArrayOfObjects(unSelected, sortSongs).map((song, i) => {
       return (
         <div key={song.id} className="ui checkbox item">
           <input
@@ -160,18 +192,33 @@ const App = ({ values, errors, touched, dirty, savedValues }) => {
     });
   };
 
+
   return (
     <Field>
       {({ field, form }) => {
         return (
           <Fragment>
-            <h4 className="ui header green">Select Songs</h4>
+
+            <h4 className={`ui header ${themeColour}`}>Select Songs</h4>
             <div className="ui grid" style={{ margin: 'auto' }}>
               <div
                 className="ui seven wide column segment"
                 style={{ marginBottom: '0px' }}
               >
-                <h5 className="ui header aligned center">Available songs</h5>
+                <Fragment>
+                  <button
+                    className="ui icon button right floated"
+                    style={{ transform: `rotate(${sortSongs === SORT.DOWN ? '0' : '180'}deg)` }}
+                    onClick={() => setSortSongs(sortSongs === SORT.DOWN ? SORT.UP : SORT.DOWN)}
+                  >
+                    <i className="sort down icon"></i>
+                  </button>
+                  <h5
+                    className="ui header aligned center"
+                    style={{ marginTop: '0px' }}>
+                    Available songs
+                  </h5>
+                </Fragment>
                 <div
                   className="ui list"
                   style={{
@@ -183,29 +230,37 @@ const App = ({ values, errors, touched, dirty, savedValues }) => {
                 </div>
               </div>
               <div
-                className="ui two wide column center aligned"
+                className="ui one wide column center aligned"
                 style={{ margin: 'auto' }}
               >
                 <button
-                  className="ui button"
+                  className="ui icon button"
                   onClick={() => moveRight(form)}
                   style={{ marginBottom: '5px' }}
-                >{`>`}</button>
+                >
+                  <i className="angle right icon"></i>
+                </button>
                 <button
-                  className="ui button"
+                  className="ui icon button"
                   onClick={() => moveLeft(form)}
                   style={{ marginBottom: '5px' }}
-                >{`<`}</button>
+                >
+                  <i className="angle left icon"></i>
+                </button>
                 <button
-                  className="ui button"
+                  className="ui icon button"
                   onClick={() => moveAllRight(form)}
                   style={{ marginBottom: '5px' }}
-                >{`>>`}</button>
+                >
+                  <i className="angle double right icon"></i>
+                </button>
                 <button
-                  className="ui button"
+                  className="ui icon button"
                   onClick={() => moveAllLeft(form)}
                   style={{ marginBottom: '5px' }}
-                >{`<<`}</button>
+                >
+                  <i className="angle double left icon"></i>
+                </button>
               </div>
               <div
                 className="ui seven wide column segment"
@@ -231,18 +286,18 @@ const App = ({ values, errors, touched, dirty, savedValues }) => {
                 stlye={{ margin: 'auto', paddingTop: '0px' }}
               >
                 <button
-                  className="ui button"
+                  className="ui icon button"
                   disabled={toggledMoveSongs.length < 1}
                   onClick={() => moveUp(form)}
                 >
-                  Up
+                  <i className="chevron up icon"></i>
                 </button>
                 <button
-                  className="ui button"
+                  className="ui icon button"
                   disabled={toggledMoveSongs.length < 1}
                   onClick={() => moveDown(form)}
                 >
-                  Down
+                  <i className="chevron down icon"></i>
                 </button>
               </div>
             </div>

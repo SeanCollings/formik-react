@@ -1,12 +1,14 @@
+import { SORT } from './constants'
+
 export const orderArray = array => {
   return array.sort((a, b) => {
     return a > b ? 1 : -1;
   });
 };
 
-export const orderArrayOfObjects = obj => {
+export const orderArrayOfObjects = (obj, direction) => {
   return obj.sort((a, b) => {
-    return a.band > b.band ? 1 : -1;
+    return direction === SORT.DOWN ? a.band > b.band ? 1 : -1 : a.band < b.band ? 1 : -1;
   });
 };
 

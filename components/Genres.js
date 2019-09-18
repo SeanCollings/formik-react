@@ -1,12 +1,17 @@
 import React, { Fragment } from 'react';
 import { Formik } from 'formik';
+import { useThemeContext } from './contexts';
+
 
 import Checkbox from './Checkbox';
+import Context from './contexts'
 
 import { GENRES as genres } from '../utils/constants';
 import { orderArray } from '../utils/helper';
 
 const App = ({ errors, touched }) => {
+  const [themeColour] = useThemeContext();
+
   const renderGenres = () => {
     return orderArray(genres).map((genre, i) => {
       return (
@@ -23,7 +28,7 @@ const App = ({ errors, touched }) => {
 
   return (
     <div className="ui container">
-      <h4 className="ui header green">Select Genres</h4>
+      <h4 className={`ui header ${themeColour}`}>Select Genres</h4>
       <div className="ui grid" style={{ margin: '5px 0' }}>
         {renderGenres()}
       </div>

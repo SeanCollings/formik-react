@@ -1,13 +1,17 @@
 import React, { Fragment } from 'react';
+import { useThemeContext } from './contexts';
+
 
 const Input = ({ values, handleChange, handleBlur, errors, touched }) => {
+  const [themeColour] = useThemeContext();
+
   return (
     <Fragment>
       <div
         className={`ui left icon input ${
           ''
           // errors.name && touched.name ? 'error' : ''
-        }`}
+          }`}
         style={{ margin: '10px 0' }}
       >
         <input
@@ -20,7 +24,8 @@ const Input = ({ values, handleChange, handleBlur, errors, touched }) => {
           className="ui input"
           placeholder="Playlist name..."
         />
-        <i className="play icon green"></i>
+
+        <i className={`play icon ${themeColour}`}></i>
       </div>
       {errors.name && touched.name && (
         <div className="ui negative message" style={{ margin: '10px 0' }}>
