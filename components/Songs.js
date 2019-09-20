@@ -2,6 +2,9 @@ import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { Formik, Field } from 'formik';
 import { useThemeContext } from './contexts';
 
+import SearchBox from './SearchBox';
+import SortButton from './SortButton';
+
 import { SONG_LIST as songList, SORT } from '../utils/constants';
 import { orderArrayOfObjects } from '../utils/helper';
 
@@ -221,14 +224,6 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
     setSearchedSongs(filtered);
   };
 
-  const handleSearchInput = eventType => {
-    if (eventType === 'mousedown') {
-      setExpandSearch(true);
-    } else if (eventType === 'blur' && searchTerm.length === 0) {
-      setExpandSearch(false);
-    }
-  };
-
   return (
     <Field>
       {({ field, form }) => {
@@ -245,51 +240,20 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
                     className="ui grid centered"
                     style={{ marginLeft: '0px' }}
                   >
-                    <h5 className="ui header six wide column">
+                    <h5 className="ui header six wide column aligned right">
                       Available songs
                     </h5>
-                    <div
-                      className="five wide column"
-                      style={{ marginTop: '-3px' }}
-                    >
-                      <div
-                        className="ui left mini icon input transparent"
-                        style={{
-                          maxWidth: expandSearch ? '100%' : '22px',
-                          transition: 'all 1s ease 0s'
-                        }}
-                      >
-                        <input
-                          type="text"
-                          placeholder="Search..."
-                          value={searchTerm}
-                          onMouseDown={e => handleSearchInput(e.type)}
-                          onBlur={e => handleSearchInput(e.type)}
-                          onChange={e =>
-                            searchSongs(e.target.value.toLowerCase())
-                          }
-                        />
-                        <i className={`search icon ${themeColour}`}></i>
-                      </div>
-                    </div>
-                    <button
-                      className="ui icon button "
-                      style={{
-                        transform: `rotateX(${
-                          sortSongs === SORT.DOWN ? '0' : '180'
-                        }deg)`,
-                        transition: 'all 0.2s ease 0s',
-                        backgroundColor: 'white',
-                        marginTop: '-14px'
-                      }}
-                      onClick={() =>
-                        setSortSongs(
-                          sortSongs === SORT.DOWN ? SORT.UP : SORT.DOWN
-                        )
-                      }
-                    >
-                      <i className="sort arrow down icon"></i>
-                    </button>
+                    <SearchBox
+                      expandSearch={expandSearch}
+                      searchTerm={searchTerm}
+                      setExpandSearch={(expand) => setExpandSearch(expand)}
+                      searchSongs={term => searchSongs(term)}
+                    />
+                    <SortButton
+                      setDirection={direction =>
+                        setSortSongs(direction === SORT.DOWN ? SORT.UP : SORT.DOWN)}
+                      direction={sortSongs}
+                    />
                   </div>
                 </Fragment>
                 <div
@@ -311,14 +275,14 @@ const App = ({ values, errors, touched, dirty, savedValues, newUpload }) => {
                   onClick={() => moveRight(form)}
                   style={{ marginBottom: '5px' }}
                 >
-                  <i className="angle right icon"></i>
+                  <i className={`angle right icon ${themeColour}`}></i>
                 </button>
                 <button
                   className="ui icon button"
                   onClick={() => moveLeft(form)}
                   style={{ marginBottom: '5px' }}
                 >
-                  <i className="angle left icon"></i>
+                  <i className={`angle left icon ${themeColour}`}></i>
                 </button>
                 <button
                   className="ui icon button"

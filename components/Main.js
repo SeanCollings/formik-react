@@ -72,7 +72,7 @@ const Main = () => {
               songs: []
             }
         }
-        enableReinitialize={true}
+        enableReinitialize
         onSubmit={(values, { setSubmitting }) => {
           console.log(values), downloadJSON(values);
         }}

@@ -4,7 +4,7 @@ import Main from './Main';
 import { ThemeProvider } from './contexts';
 
 const App = () =>
-  <div className="ui container" style={{ marginTop: '25px' }}>
+  <div className="ui container">
     <ThemeProvider>
       <Main />
     </ThemeProvider>
